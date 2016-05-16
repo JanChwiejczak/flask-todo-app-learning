@@ -22,4 +22,3 @@ with sqlite3.connect(DATABASE_PATH) as connection:
              ('Finish RP course', '31/05/2016', 8, 1)]
 
     c.executemany('INSERT INTO tasks (name, due_date, priority, status) VALUES (?,?,?,?)', tasks)
-    
