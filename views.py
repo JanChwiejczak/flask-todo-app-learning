@@ -23,7 +23,7 @@ def login_required(test):
         else:
             flash('Please login first.')
             return redirect(url_for('login'))
-        return wrap
+    return wrap
 
 # route handlers
 
