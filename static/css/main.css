@@ -29,8 +29,7 @@ h2              { font-size: 1.2em; }
 .error          { background: #f0d6d6; padding: 0.5em; }
 
 input[type=submit] {
-    padding:5px 15px; 
-    background:#ccc; 
+    background:#ccc;
     border:0 none;
     cursor:pointer;
     border-radius: 5px;
