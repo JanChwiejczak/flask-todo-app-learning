@@ -68,4 +68,7 @@ def tasks():
         closed_tasks=closed_tasks
     )
 
-@app.
+@app.route('/add', methods=['POST'])
+@login_required
+def new_task():
+    pass
