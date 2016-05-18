@@ -1,4 +1,4 @@
-from forms import AddTaskForm
+from forms import AddTaskForm, RegisterForm, LoginForm
 
 from functools import wraps
 from flask import Flask, flash, redirect, request, render_template, session, url_for, g
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object('_config')
 db = SQLAlchemy(app)
 
-from models import Task
+from models import Task, User
 # helper functions
 
 
@@ -32,6 +32,23 @@ def logout():
     session.pop('logged_in', None)
     flash('Goodbye!')
     return redirect(url_for('login'))
+
+@app.route('/register')
+def register():
+    error = None
+    form = RegisterForm(request.form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            new_user = User(
+                form.name.data,
+                form.email.data,
+                form.password.data
+            )
+            db.session.add(new_user)
+            db.commit()
+            flash('Thank you for registering. Please Login')
+            return redirect(url_for('login'))
+        return render_template('register.html', form=form, error=error)
 
 
 @app.route('/', methods=['GET', 'POST'])
