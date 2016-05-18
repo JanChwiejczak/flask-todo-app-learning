@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome to FlaskTaskr!!</title>
+    <title>Welcome to Flask Task Manager!</title>
     <link type="text/css" rel="stylesheet" href="{{url_for('static',filename='css/main.css') }}">
 </head>
 <body>
@@ -12,7 +12,7 @@
         {% endfor %}
 
         {% if error %}
-        <div class="error"><stron>Error:</stron> {{ error }}</div>
+        <div class="error"><strong>Error:</strong> {{ error }}</div>
         {% endif %}
 
         <br>

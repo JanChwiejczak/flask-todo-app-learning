@@ -32,8 +32,7 @@ span {
     display: inline-block;
 }
 input[type=submit] {
-    padding:5px 15px; 
-    background:#ccc; 
+    background:#ccc;
     border:0 none;
     cursor:pointer;
     border-radius: 5px;
