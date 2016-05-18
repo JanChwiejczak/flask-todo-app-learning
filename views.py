@@ -78,7 +78,7 @@ def new_task():
             db.session.commit()
             flash('New entry was successfully posted. Thanks.')
         else:
-            flash('Data validation not passed')
+            flash('Please provide complete data')
     return redirect(url_for('tasks'))
 
 
