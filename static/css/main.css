@@ -28,6 +28,9 @@ h2              { font-size: 1.2em; }
                   border: 1px solid #aacbe2; }
 .error          { background: #f0d6d6; padding: 0.5em; }
 
+span {
+    display: inline-block;
+}
 input[type=submit] {
     padding:5px 15px; 
     background:#ccc; 
@@ -36,4 +39,5 @@ input[type=submit] {
     border-radius: 5px;
     font-family: 'alternate-gothic-no-3-d';
     font-size: 1em
+    display: inline-block;
 }
