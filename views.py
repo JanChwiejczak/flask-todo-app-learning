@@ -33,7 +33,7 @@ def logout():
     flash('Goodbye!')
     return redirect(url_for('login'))
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     error = None
     form = RegisterForm(request.form)
@@ -45,10 +45,10 @@ def register():
                 form.password.data
             )
             db.session.add(new_user)
-            db.commit()
+            db.session.commit()
             flash('Thank you for registering. Please Login')
             return redirect(url_for('login'))
-        return render_template('register.html', form=form, error=error)
+    return render_template('register.html', form=form, error=error)
 
 
 @app.route('/', methods=['GET', 'POST'])
