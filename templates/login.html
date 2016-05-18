@@ -2,7 +2,7 @@
 {% block content %}
 <h1>Welcome to Flask Task Manager</h1>
 <h3>Please login to access your task list.</h3>
-<form method="post" action="/">
+<form method="POST" action="/">
     <span>Username: <input type="text" name="username" value="{{request.form.username}}"></span>
     <span>Password: <input type="text" name="password" value="{{request.form.password}}"></span>
     <input type="submit" value="Login">
