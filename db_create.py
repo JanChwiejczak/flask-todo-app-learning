@@ -14,5 +14,5 @@ list_of_tasks = [('Finish this tutorial', date(2016,05,17), 10, 1),
 
 # Insert Data
 for t in list_of_tasks:
-    db.session.add(Task(*t)) 
+    db.session.add(Task(*t))
 db.session.commit()
