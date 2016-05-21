@@ -27,7 +27,15 @@ def login_required(test):
             return redirect(url_for('login'))
     return wrap
 
-# route handlers
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash("Error in the {} field - {}".format(getattr(form, field).label.text, error), 'error')
+
+########################
+#### route handlers ####
+########################
 
 
 @app.route('/logout/')
@@ -68,9 +76,9 @@ def login():
                 flash('Welcome')
                 return redirect(url_for('tasks'))
             else:
-                error = 'Invalid username or password'
+               error = 'Invalid username or password'
         else:
-            error = 'Both fields are required'
+           error = 'Both fields are required'
     return render_template('login.html', form=form, error=error)
 
 
@@ -129,8 +137,3 @@ def delete_entry(task_id):
     flash('The task was deleted. Why not add a new one?')
     return redirect(url_for('tasks'))
 
-
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash("Error in the {} field - {}".format(getattr(form, field).label.text, error), 'error')

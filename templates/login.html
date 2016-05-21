@@ -5,12 +5,26 @@
 <form method="POST" action="/">
     {{ form.csrf_token }}
     <p>
-        {{ form.name.label }}: {{ form.name }}
-        &nbsp;&nbsp;
-        {{ form.password.label }}: {{ form.password }}
-        &nbsp;&nbsp;
-    <input type="submit" value="Login">
+        {{ form.name.label }}: {{ form.name(placeholder = "Your registered name") }}
+        {% if form.name.errors %}
+          <span class="error">
+            {% for error in form.name.errors %}
+              {{ error }}
+            {% endfor %}
+          </span>
+        {% endif %}
     </p>
+    <p>
+        {{ form.password.label }}: {{ form.password }}
+        {% if form.password.errors %}
+          <span class="error">
+            {% for error in form.password.errors %}
+              {{ error }}
+            {% endfor %}
+          </span>
+        {% endif %}
+    </p>
+    <button class="btn btn-sm btn-success" type="submit">Sign in</button>
 </form>
 
 <br>
