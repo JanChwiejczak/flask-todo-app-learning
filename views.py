@@ -128,3 +128,9 @@ def delete_entry(task_id):
     db.session.commit()
     flash('The task was deleted. Why not add a new one?')
     return redirect(url_for('tasks'))
+
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash("Error in the {} field - {}".format(getattr(form, field).label.text, error), 'error')
