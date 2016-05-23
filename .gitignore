@@ -2,6 +2,7 @@
 env/
 venv/
 .idea/
+.cache/
 
 #python specific
 *.pyc
@@ -13,3 +14,6 @@ __pycache__
 *.DS_Store
 *.swp
 *.out
+
+#Test db
+test.db
