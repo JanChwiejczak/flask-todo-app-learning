@@ -107,7 +107,7 @@ def tasks():
     )
 
 
-@app.route('/add', methods=['GET','POST'])
+@app.route('/add', methods=['GET', 'POST'])
 @login_required
 def new_task():
     error = None

@@ -36,6 +36,22 @@ class AllTests(unittest.TestCase):
             follow_redirects=True
         )
 
+    def create_user(self, name, email, password):
+        new_user = User(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+    def create_task(self, name, due_date, priority):
+        return self.app.post(
+            '/add',
+            data=dict(
+                name=name,
+                due_date=due_date,
+                priority=priority
+            ),
+            follow_redirects=True
+        )
+
     # Unit tests
 
     def test_user_can_register(self):
@@ -49,18 +65,6 @@ class AllTests(unittest.TestCase):
     def test_users_cannot_login_unless_registered(self):
         response = self.login('fakeuser', 'fakepassword')
         self.assertIn(b'Invalid username or password', response.data)
-
-    def test_logged_in_users_can_logout(self):
-        self.register('Testerthatwilllogout', 'testing@gmail.com', 'anothertest101', 'anothertest101')
-        self.login('Testerthatwilllogout', 'anothertest101')
-        response = self.logout()
-        self.assertIn(b'Goodbye!', response.data)
-        # Should also assert redirect to login
-
-    def test_not_logged_in_users_cannot_logout(self):
-        response = self.logout()
-        self.assertNotIn(b'Goodbye!', response.data)
-
 
     # Form validation tests
     # Should be changed to flask testing assert redirects from response stream checks
@@ -97,6 +101,34 @@ class AllTests(unittest.TestCase):
         response = self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
         self.assertIn(b'That username and/or email already exist.', response.data)
 
+    def test_logged_in_users_can_logout(self):
+        self.register('Testerthatwilllogout', 'testing@gmail.com', 'anothertest101', 'anothertest101')
+        self.login('Testerthatwilllogout', 'anothertest101')
+        response = self.logout()
+        self.assertIn(b'Goodbye!', response.data)
+        # Should also assert redirect to login
+
+    def test_not_logged_in_users_cannot_logout(self):
+        response = self.logout()
+        self.assertNotIn(b'Goodbye!', response.data)
+
+    def test_logged_in_users_can_access_tasks(self):
+        self.register('Testerthatwilllogout', 'testing@gmail.com', 'anothertest101', 'anothertest101')
+        self.login('Testerthatwilllogout', 'anothertest101')
+        response = self.app.get('/tasks/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Add a new task:', response.data)
+
+    def test_not_logged_in_users_cannot_access_tasks(self):
+        response = self.app.get('/tasks/', follow_redirects=True)
+        self.assertIn(b'Please login first.', response.data)
+
+    def test_users_can_add_tasks(self):
+        self.create_user('Testarossa', 'tester@gmail.com', 's0mepa455')
+        self.login('Testarossa', 's0mepa455')
+        self.app.get('/tasks/', follow_redirects=True)
+        response = self.create_task('Go to bank', '05/25/2017', '5')
+        self.assertIn(b'New entry was successfully posted. Thanks.', response.data)
 
 if __name__ == '__main__':
     unittest.main()
