@@ -43,17 +43,17 @@ class AllTests(unittest.TestCase):
         for t in test:
             assert t.name == 'michael'
 
-    def test_form_is_present_on_login_page(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Please login to access your task list', response.data)
-
     def test_users_cannot_login_unless_registered(self):
         response = self.login('fakeuser', 'fakepassword')
         self.assertIn(b'Invalid username or password', response.data)
 
     # Form validation tests
     # Should be changed to flask testing assert redirects from response stream checks
+
+    def test_form_is_present_on_login_page(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Please login to access your task list', response.data)
 
     def test_user_can_login(self):
         self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
@@ -64,6 +64,17 @@ class AllTests(unittest.TestCase):
         self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
         response = self.login('DROP TABLE User; alert("alert box!";', 'tpassword')
         self.assertIn(b'Invalid username or password', response.data)
+
+    def test_form_is_present_on_register_page(self):
+        response = self.app.get('/register')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Please register to access your task list.', response.data)
+
+    def test_user_registration(self):
+        self.app.get('/register', follow_redirects=True)
+        response = self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
+        self.assertIn(b'Thank you for registering. Please Login', response.data)
+        
 
 if __name__ == '__main__':
     unittest.main()
