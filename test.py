@@ -26,6 +26,9 @@ class AllTests(unittest.TestCase):
     def login(self, name, password):
         return self.app.post('/', data=dict(name=name, password=password), follow_redirects=True)
 
+    def logout(self):
+        return self.app.get('/logout', follow_redirects=True)
+
     def register(self, name, email, password, confirm):
         return self.app.post(
             '/register',
@@ -46,6 +49,18 @@ class AllTests(unittest.TestCase):
     def test_users_cannot_login_unless_registered(self):
         response = self.login('fakeuser', 'fakepassword')
         self.assertIn(b'Invalid username or password', response.data)
+
+    def test_logged_in_users_can_logout(self):
+        self.register('Testerthatwilllogout', 'testing@gmail.com', 'anothertest101', 'anothertest101')
+        self.login('Testerthatwilllogout', 'anothertest101')
+        response = self.logout()
+        self.assertIn(b'Goodbye!', response.data)
+        # Should also assert redirect to login
+
+    def test_not_logged_in_users_cannot_logout(self):
+        response = self.logout()
+        self.assertNotIn(b'Goodbye!', response.data)
+
 
     # Form validation tests
     # Should be changed to flask testing assert redirects from response stream checks
@@ -74,7 +89,14 @@ class AllTests(unittest.TestCase):
         self.app.get('/register', follow_redirects=True)
         response = self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
         self.assertIn(b'Thank you for registering. Please Login', response.data)
-        
+
+    def test_user_registration_error(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
+        self.app.get('/register', follow_redirects=True)
+        response = self.register('JanTesting', 'janny@gmail.com', 'tpassword', 'tpassword')
+        self.assertIn(b'That username and/or email already exist.', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
