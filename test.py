@@ -130,5 +130,41 @@ class AllTests(unittest.TestCase):
         response = self.create_task('Go to bank', '05/25/2017', '5')
         self.assertIn(b'New entry was successfully posted. Thanks.', response.data)
 
+    def test_users_cannot_add_tasks_when_error(self):
+        self.create_user('Mikosan', 'miko@gmail.com', 'password')
+        self.login('Mikosan', 'password')
+        self.app.get('/tasks/', follow_redirects=True)
+        response = self.create_task('Go to bank', '', '5')
+        self.assertIn(b'This field is required.', response.data)
+
+    def test_users_can_complete_tasks(self):
+        self.create_user('Testarossa', 'tester@gmail.com', 's0mepa455')
+        self.login('Testarossa', 's0mepa455')
+        self.app.get('/tasks/', follow_redirects=True)
+        self.create_task('Go to bank', '05/25/2017', '5')
+        response = self.app.get('/complete/1', follow_redirects=True)
+        self.assertIn(b'The task is complete. Nice.', response.data)
+
+    def test_users_can_delete_tasks(self):
+        self.create_user('Testarossa', 'tester@gmail.com', 's0mepa455')
+        self.login('Testarossa', 's0mepa455')
+        self.app.get('/tasks/', follow_redirects=True)
+        self.create_task('Go to bank', '05/25/2017', '5')
+        response = self.app.get('/delete/1', follow_redirects=True) # should check whether it actually was removed from base
+        self.assertIn(b'The task was deleted. Why not add a new one?', response.data)
+
+    def test_users_cannot_complete_tasks_that_are_not_created_by_them(self):
+        self.create_user('Testarossa', 'tester@gmail.com', 's0mepa455')
+        self.login('Testarossa', 's0mepa455')
+        self.app.get('/tasks/', follow_redirects=True)
+        self.create_task('Go to bank', '05/25/2017', '5')
+        self.logout()
+        self.create_user('Mikosan', 'miko@gmail.com', 'password')
+        self.login('Mikosan', 'password')
+        self.app.get('/tasks/', follow_redirects=True)
+        response = self.app.get('/complete/1', follow_redirects=True)
+        self.assertNotIn(b'The task is complete. Nice.', response.data)
+
+
 if __name__ == '__main__':
     unittest.main()
