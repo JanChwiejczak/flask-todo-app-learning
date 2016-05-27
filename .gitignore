@@ -15,5 +15,7 @@ __pycache__
 *.swp
 *.out
 
-#Test db
+#Test db & coverage
 test.db
+.coverage
+htmlcov/

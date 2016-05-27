@@ -2,10 +2,10 @@
 {% block content %}
 <h1>Welcome to Flask Task Manager</h1>
 <h3>Please login to access your task list.</h3>
-<form method="POST" action="/">
+<form class="form-signin" role="form" method="POST" action="/">
     {{ form.csrf_token }}
     <p>
-        {{ form.name.label }}: {{ form.name(placeholder = "Your registered name") }}
+        {{ form.name(placeholder = "email address") }}
         {% if form.name.errors %}
           <span class="error">
             {% for error in form.name.errors %}
@@ -15,7 +15,7 @@
         {% endif %}
     </p>
     <p>
-        {{ form.password.label }}: {{ form.password }}
+        {{ form.password(placeholder ="password") }}
         {% if form.password.errors %}
           <span class="error">
             {% for error in form.password.errors %}
