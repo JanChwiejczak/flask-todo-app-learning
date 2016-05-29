@@ -112,9 +112,16 @@ class AllTests(unittest.TestCase):
         response = self.logout()
         self.assertNotIn(b'Goodbye!', response.data)
 
-
     def test_string_representation_of_the_user_object(self):
         new_user = User('michael', 'michael@mherman.org', 'michaelherman')
         db.session.add(new_user)
         db.session.commit()
         assert new_user.name == 'michael'
+
+    def test_default_user_role(self):
+        new_user = User('Johnnny', 'michael@comsemase.org', 'michaelherman')
+        db.session.add(new_user)
+        db.session.commit()
+
+        user = db.session.query(User).first()
+        self.assertEquals(user.role, 'user')
