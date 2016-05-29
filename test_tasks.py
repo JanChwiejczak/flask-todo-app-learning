@@ -41,6 +41,11 @@ class AllTests(unittest.TestCase):
             follow_redirects=True
         )
 
+    def create_user(self, name, email, password, role=None):
+        new_user = User(name=name, email=email, password=password, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+
     def create_task(self, name, due_date, priority):
         return self.app.post(
             '/add',
@@ -51,11 +56,6 @@ class AllTests(unittest.TestCase):
             ),
             follow_redirects=True
         )
-
-    def login_go_to_tasks(self, name, email, password):
-        new_user = User(name=name, email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
 
     def login_go_to_tasks(self, name, password):
         email = name+"@example.com"
@@ -117,3 +117,26 @@ class AllTests(unittest.TestCase):
         response = self.app.get('/delete/1', follow_redirects=True)
         self.assertNotIn(b'The task was deleted. Why not add a new one?', response.data)
         self.assertIn(b'You can only delete tasks that belong to you', response.data)
+
+    def test_admin_users_can_complete_tasks_that_are_not_created_by_them(self):
+        self.login_go_to_tasks('Testarossa', 's0mepa455')
+        self.create_task('Go to bank', '05/25/2017', '5')
+        self.logout()
+        self.create_user('Mikosan','miko@gmail.com', 'password', 'admin')
+        self.login('Mikosan', 'password')
+        self.app.get('/tasks/', follow_redirects=True)
+        response = self.app.get('/complete/1', follow_redirects=True)
+        self.assertIn(b'The task is complete. Nice.', response.data)
+        self.assertNotIn(b'You can only update tasks that belong to you', response.data)
+
+
+    def test_admin_users_can_delete_tasks_that_are_not_created_by_them(self):
+        self.login_go_to_tasks('Adriano', 'Marcepano')
+        self.create_task('new task for adriano', '08/12/2016', '7')
+        self.logout()
+        self.create_user('Mikosan','miko@gmail.com', 'password', 'admin')
+        self.login('Mikosan', 'password')
+        self.app.get('/tasks/', follow_redirects=True)
+        response = self.app.get('/delete/1', follow_redirects=True)
+        self.assertIn(b'The task was deleted. Why not add a new one?', response.data)
+        self.assertNotIn(b'You can only delete tasks that belong to you', response.data)

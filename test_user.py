@@ -41,8 +41,8 @@ class AllTests(unittest.TestCase):
             follow_redirects=True
         )
 
-    def create_user(self, name, email, password):
-        new_user = User(name=name, email=email, password=password)
+    def create_user(self, name, email, password, role=None):
+        new_user = User(name=name, email=email, password=password, role=role)
         db.session.add(new_user)
         db.session.commit()
 
