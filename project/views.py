@@ -1,19 +1,19 @@
 import datetime
 
-from forms import AddTaskForm, RegisterForm, LoginForm
+from project.forms import AddTaskForm, RegisterForm, LoginForm
 
 from functools import wraps
 from flask import Flask, flash, redirect, request, render_template, session, url_for, g
 from sqlalchemy.exc import IntegrityError
-from flask.ext.sqlalchemy import SQLAlchemy
+# from flask.ext.sqlalchemy import SQLAlchemy
 
 # config
 
-app = Flask(__name__)
-app.config.from_object('_config')
-db = SQLAlchemy(app)
-
-from models import Task, User
+# app = Flask(__name__)
+# app.config.from_object('_config')
+# db = SQLAlchemy(app)
+from project import db, app
+from project.models import Task, User
 
 # helper functions
 
