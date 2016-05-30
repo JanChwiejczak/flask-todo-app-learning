@@ -14,16 +14,3 @@ class AddTaskForm(Form):
         ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10')]
         )
     status = IntegerField('Status')
-
-
-class RegisterForm(Form):
-    name = StringField('Username', validators=[DataRequired(), Length(min=6, max=25)])
-    email = StringField('Email', validators=[DataRequired(), Email(), Length(min=6, max=40)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=40)])
-    confirm = PasswordField('Repeat Password',
-                            validators=[DataRequired(), EqualTo('password', message='Password must match')])
-
-
-class LoginForm(Form):
-    name = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])

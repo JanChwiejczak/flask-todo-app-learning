@@ -6,3 +6,6 @@ app.config.from_object('project._config')
 db = SQLAlchemy(app)
 
 from project import views
+from project.users.views import users_blueprint
+
+app.register_blueprint(users_blueprint)

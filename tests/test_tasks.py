@@ -1,9 +1,10 @@
 import os
 import unittest
 from project import app, db
-from project._config import basedir
 from project.models import User
 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 TEST_DB = 'test.db'
 
 
