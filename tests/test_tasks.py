@@ -1,7 +1,7 @@
 import os
 import unittest
 from project import app, db
-from project.models import User
+from project.models import User, Task
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -130,7 +130,6 @@ class AllTests(unittest.TestCase):
         self.assertIn(b'The task is complete. Nice.', response.data)
         self.assertNotIn(b'You can only update tasks that belong to you', response.data)
 
-
     def test_admin_users_can_delete_tasks_that_are_not_created_by_them(self):
         self.login_go_to_tasks('Adriano', 'Marcepano')
         self.create_task('new task for adriano', '08/12/2016', '7')
@@ -141,3 +140,8 @@ class AllTests(unittest.TestCase):
         response = self.app.get('/delete/1', follow_redirects=True)
         self.assertIn(b'The task was deleted. Why not add a new one?', response.data)
         self.assertNotIn(b'You can only delete tasks that belong to you', response.data)
+
+    def test_Task_default_representation(self):
+        new_task = Task('running around', '05/05/2016', '1', '05/05/2016', '1', '1')
+        self.assertEqual(new_task.__repr__(), '<name running around>')
+

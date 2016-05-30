@@ -1,21 +1,17 @@
 import datetime
-
-from project.forms import AddTaskForm
-
 from functools import wraps
-from flask import Flask, flash, redirect, request, render_template, session, url_for, g
+from flask import flash, redirect, request, render_template, session, url_for, Blueprint
 from sqlalchemy.exc import IntegrityError
-# from flask.ext.sqlalchemy import SQLAlchemy
 
-# config
+from .forms import AddTaskForm
+from project import db
+from project.models import Task
 
-# app = Flask(__name__)
-# app.config.from_object('_config')
-# db = SQLAlchemy(app)
-from project import db, app
-from project.models import Task, User
+################# CONFIG #####################
 
-# helper functions
+tasks_blueprint = Blueprint('tasks', __name__)
+
+################# HELPER FUNCTIONS ###########
 
 
 def login_required(test):
@@ -25,14 +21,8 @@ def login_required(test):
             return test(*args, **kwargs)
         else:
             flash('Please login first.')
-            return redirect(url_for('login'))
+            return redirect(url_for('users.login'))
     return wrap
-
-
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash("Error in the {} field - {}".format(getattr(form, field).label.text, error), 'error')
 
 
 def open_tasks():
@@ -42,15 +32,10 @@ def open_tasks():
 def closed_tasks():
     return db.session.query(Task).filter_by(status='0').order_by(Task.due_date.asc())
 
-########################
-#### route handlers ####
-########################
-
-###
+################# ROUTES ###########
 
 
-
-@app.route('/tasks/')
+@tasks_blueprint.route('/tasks/')
 @login_required
 def tasks():
     return render_template(
@@ -60,8 +45,7 @@ def tasks():
         closed_tasks=closed_tasks()
     )
 
-
-@app.route('/add', methods=['GET', 'POST'])
+@tasks_blueprint.route('/add', methods=['GET', 'POST'])
 @login_required
 def new_task():
     error = None
@@ -79,7 +63,7 @@ def new_task():
             db.session.add(new_task)
             db.session.commit()
             flash('New entry was successfully posted. Thanks.')
-            return redirect(url_for('tasks'))
+            return redirect(url_for('tasks.tasks'))
     return render_template(
         'tasks.html',
         form=form,
@@ -89,7 +73,7 @@ def new_task():
     )
 
 
-@app.route('/complete/<int:task_id>')
+@tasks_blueprint.route('/complete/<int:task_id>')
 @login_required
 def complete(task_id):
     new_id = task_id
@@ -100,10 +84,10 @@ def complete(task_id):
         flash('The task is complete. Nice.')
     else:
         flash('You can only update tasks that belong to you')
-    return redirect(url_for('tasks'))
+    return redirect(url_for('tasks.tasks'))
 
 
-@app.route('/delete/<int:task_id>')
+@tasks_blueprint.route('/delete/<int:task_id>')
 @login_required
 def delete_entry(task_id):
     new_id = task_id
@@ -114,5 +98,4 @@ def delete_entry(task_id):
         flash('The task was deleted. Why not add a new one?')
     else:
         flash('You can only delete tasks that belong to you')
-    return redirect(url_for('tasks'))
-
+    return redirect(url_for('tasks.tasks'))

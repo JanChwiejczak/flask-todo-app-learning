@@ -5,7 +5,8 @@ app = Flask(__name__)
 app.config.from_object('project._config')
 db = SQLAlchemy(app)
 
-from project import views
 from project.users.views import users_blueprint
+from project.tasks.views import tasks_blueprint
 
 app.register_blueprint(users_blueprint)
+app.register_blueprint(tasks_blueprint)

@@ -1,6 +1,6 @@
 from flask_wtf import Form
-from wtforms import StringField, DateField, IntegerField, SelectField, PasswordField
-from wtforms.validators import DataRequired, Length, EqualTo, Email
+from wtforms import StringField, DateField, IntegerField, SelectField
+from wtforms.validators import DataRequired
 
 
 class AddTaskForm(Form):

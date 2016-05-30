@@ -1,9 +1,9 @@
 import os
 import unittest
 from project import app, db
-from project._config import basedir
 from project.models import User
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 TEST_DB = 'test.db'
 
 
@@ -46,14 +46,12 @@ class AllTests(unittest.TestCase):
         db.session.add(new_user)
         db.session.commit()
 
-
     def test_user_can_register(self):
         new_user = User('michael', 'michael@mherman.org', 'michaelherman')
         db.session.add(new_user)
         db.session.commit()
         test = db.session.query(User).first()
         assert test.name == 'michael'
-
 
     def test_users_cannot_login_unless_registered(self):
         response = self.login('fakeuser', 'fakepassword')
@@ -67,30 +65,25 @@ class AllTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Please login to access your task list', response.data)
 
-
     def test_user_can_login(self):
         self.register(usr='JanTesting', pwd='tpassword')
         response = self.login('JanTesting', 'tpassword')
         self.assertIn(b'Add a new task', response.data)
-
 
     def test_invalid_login_form_data(self):
         self.register(usr='JanTesting', pwd='tpassword')
         response = self.login('DROP TABLE User; alert("alert box!";', 'tpassword')
         self.assertIn(b'Invalid username or password', response.data)
 
-
     def test_form_is_present_on_register_page(self):
         response = self.app.get('/register')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Please register to access your task list.', response.data)
 
-
     def test_user_registration(self):
         self.app.get('/register', follow_redirects=True)
         response = self.register(usr='JanTesting', pwd='tpassword')
         self.assertIn(b'Thank you for registering. Please Login', response.data)
-
 
     def test_user_registration_error(self):
         self.app.get('/register', follow_redirects=True)
@@ -99,14 +92,12 @@ class AllTests(unittest.TestCase):
         response = self.register(usr='JanTesting', pwd='tpassword')
         self.assertIn(b'That username and/or email already exist.', response.data)
 
-
     def test_logged_in_users_can_logout(self):
         self.register('Testerthatwilllogout', 'anothertest101')
         self.login('Testerthatwilllogout', 'anothertest101')
         response = self.logout()
         self.assertIn(b'Goodbye!', response.data)
         # Should also assert redirect to login
-
 
     def test_not_logged_in_users_cannot_logout(self):
         response = self.logout()
@@ -125,3 +116,7 @@ class AllTests(unittest.TestCase):
 
         user = db.session.query(User).first()
         self.assertEquals(user.role, 'user')
+
+    def test_User_default_representation(self):
+        new_user = User(name='Mikosan', email='miko@gmail.com', password='password')
+        self.assertEqual(new_user.__repr__(), '<User Mikosan>')
