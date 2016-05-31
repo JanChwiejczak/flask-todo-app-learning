@@ -58,9 +58,9 @@ class AllTests(unittest.TestCase):
             follow_redirects=True
         )
 
-    def login_go_to_tasks(self, name, password):
+    def login_go_to_tasks(self, name, password, role=None):
         email = name+"@example.com"
-        new_user = User(name=name, email=email, password=password)
+        new_user = User(name=name, email=email, password=password, role=role)
         db.session.add(new_user)
         db.session.commit()
         self.login(name, password)
@@ -149,4 +149,37 @@ class AllTests(unittest.TestCase):
         self.login_go_to_tasks('JanChwiejczak', 'password')
         response = self.app.get('/tasks', follow_redirects=True)
         self.assertIn(b'JanChwiejczak', response.data)
+
+    def test_users_cannot_see_task_modify_delete_link_for_task_not_created_by_them(self):
+        self.login_go_to_tasks('Adriano', 'Marcepano')
+        self.create_task('new task for adriano', '08/12/2016', '7')
+        self.logout()
+        self.login_go_to_tasks('Adriano_twin', 'Marcepano2')
+        response = self.app.get('/tasks/', follow_redirects=True)
+        self.assertNotIn(b'Mark as complete', response.data)
+        self.assertNotIn(b'Delete', response.data)
+
+    def test_users_can_see_task_modify_delete_link_for_task_created_by_them(self):
+        self.login_go_to_tasks('Mikosan', 'password')
+        self.create_task('Miko secret task', '08/12/2016', '5')
+        self.logout()
+        self.login_go_to_tasks('Adriano', 'Marcepano')
+        self.create_task('new task for adriano', '08/12/2016', '7')
+        response = self.app.get('/tasks/', follow_redirects=True)
+        self.assertIn(b'/complete/2', response.data)
+        self.assertIn(b'/delete/2', response.data)
+
+
+    def test_admin_users_can_see_task_modify_delete_link_for_all_tasks(self):
+        self.login_go_to_tasks('Mikosan', 'password')
+        self.create_task('Miko secret task', '08/12/2016', '5')
+        self.logout()
+        self.login_go_to_tasks('Adriano', 'Marcepano', 'admin')
+        self.create_task('new task for adriano', '08/12/2016', '7')
+        response = self.app.get('/tasks/', follow_redirects=True)
+        self.assertIn(b'/complete/1', response.data)
+        self.assertIn(b'/delete/1', response.data)
+        self.assertIn(b'/complete/2', response.data)
+        self.assertIn(b'/delete/2', response.data)
+
 
