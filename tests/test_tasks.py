@@ -1,6 +1,6 @@
 import os
 import unittest
-from project import app, db
+from project import app, db, bcrypt
 from project.models import User, Task
 
 
@@ -43,7 +43,7 @@ class AllTests(unittest.TestCase):
         )
 
     def create_user(self, name, email, password, role=None):
-        new_user = User(name=name, email=email, password=password, role=role)
+        new_user = User(name=name, email=email, password=bcrypt.generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
 
@@ -60,7 +60,7 @@ class AllTests(unittest.TestCase):
 
     def login_go_to_tasks(self, name, password, role=None):
         email = name+"@example.com"
-        new_user = User(name=name, email=email, password=password, role=role)
+        new_user = User(name=name, email=email, password=bcrypt.generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
         self.login(name, password)

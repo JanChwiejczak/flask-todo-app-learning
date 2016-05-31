@@ -1,6 +1,6 @@
 # db_create.py
 
-from project import db
+from project import db, bcrypt
 from project.models import Task, User
 from datetime import date
 
@@ -8,11 +8,12 @@ from datetime import date
 db.create_all()
 
 # admin user
-db.session.add(User("admin", "maslo@admina.com", "admin", "admin"))
+password = bcrypt.generate_password_hash('admin')
+db.session.add(User("admin", "maslo@admina.com", password, "admin"))
 
 # Some example data
-list_of_tasks = [('Finish this tutorial', date(2016,5,17), 10, 1),
-                 ('Finish RP course', date(2016,6,30), 8, 1)]
+list_of_tasks = [('Finish this tutorial', date(2016,5,17), 10, date(2016,5,10), 1, 1),
+                 ('Finish RP course', date(2016,6,30), 8, date(2016,5,10), 1, 1)]
 
 # Insert Data
 for t in list_of_tasks:

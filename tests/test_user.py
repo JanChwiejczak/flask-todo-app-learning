@@ -42,7 +42,7 @@ class AllTests(unittest.TestCase):
         )
 
     def create_user(self, name, email, password, role=None):
-        new_user = User(name=name, email=email, password=password, role=role)
+        new_user = User(name=name, email=email, password=bcrypt.generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
 
