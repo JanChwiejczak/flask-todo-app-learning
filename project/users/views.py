@@ -32,7 +32,8 @@ def login_required(test):
 def logout():
     session.pop('logged_in', None)
     session.pop('user_id', None)
-    session.pop('role', None)
+    session.pop('user_role', None)
+    session.pop('user_name', None)
     flash('Goodbye!')
     return redirect(url_for('users.login'))
 
@@ -47,6 +48,7 @@ def login():
                 session['logged_in'] = True
                 session['user_id'] = user.id
                 session['user_role'] = user.role
+                session['user_name'] = user.name
                 flash('Welcome')
                 return redirect(url_for('tasks.tasks'))
             else:

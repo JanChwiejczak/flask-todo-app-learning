@@ -145,3 +145,8 @@ class AllTests(unittest.TestCase):
         new_task = Task('running around', '05/05/2016', '1', '05/05/2016', '1', '1')
         self.assertEqual(new_task.__repr__(), '<name running around>')
 
+    def test_Task_template_displays_logged_in_user_name(self):
+        self.login_go_to_tasks('JanChwiejczak', 'password')
+        response = self.app.get('/tasks', follow_redirects=True)
+        self.assertIn(b'JanChwiejczak', response.data)
+
