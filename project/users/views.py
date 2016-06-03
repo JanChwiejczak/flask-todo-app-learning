@@ -1,6 +1,5 @@
 from functools import wraps
 from flask import flash, redirect, request, render_template, session, url_for, Blueprint
-from sqlalchemy.exc import IntegrityError
 
 from .forms import RegisterForm, LoginForm
 from project import db, bcrypt
@@ -39,7 +38,6 @@ def logout():
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def login():
-    error = None
     form = LoginForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -51,14 +49,15 @@ def login():
                 session['user_name'] = user.name
                 flash('Welcome')
                 return redirect(url_for('tasks.tasks'))
+            elif not user:
+                form.name.errors.append('Username not recognized')
             else:
-               error = 'Invalid username or password'
-    return render_template('login.html', form=form, error=error)
+                form.password.errors.append('Incorrect password')
+    return render_template('login.html', form=form)
 
 
 @users_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
-    error = None
     form = RegisterForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -67,12 +66,15 @@ def register():
                 form.email.data,
                 bcrypt.generate_password_hash(form.password.data)
             )
-            try:
+            user_exist = db.session.query(User).filter_by(name=new_user.name).first()
+            email_exist = db.session.query(User).filter_by(email=new_user.email).first()
+            if user_exist:
+                form.name.errors.append('Username already taken')
+            if email_exist:
+                form.email.errors.append('Email already in use')
+            if not (user_exist or email_exist):
                 db.session.add(new_user)
                 db.session.commit()
                 flash('Thank you for registering. Please Login')
                 return redirect(url_for('users.login'))
-            except IntegrityError:
-                error = 'That username and/or email already exist.'
-                return render_template('register.html', form=form, error=error)
-    return render_template('register.html', form=form, error=error)
+    return render_template('register.html', form=form)

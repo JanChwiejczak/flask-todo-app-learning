@@ -30,7 +30,7 @@
                 <li><a href="/logout">Signout</a></li>
                 {% endif %}
             </ul>
-            {% if session.logged_in %}
+            {% if session['logged_in'] == True %}
               <ul class="nav navbar-nav navbar-right">
                 <li><a>Welcome, {{ user_name }}</a></li>
               </ul>

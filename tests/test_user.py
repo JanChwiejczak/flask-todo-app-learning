@@ -11,6 +11,7 @@ class AllTests(unittest.TestCase):
 
     # executed prior to each test
     def setUp(self):
+        app.config['DEBUG'] = False
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, TEST_DB)
@@ -55,7 +56,7 @@ class AllTests(unittest.TestCase):
 
     def test_users_cannot_login_unless_registered(self):
         response = self.login('fakeuser', 'fakepassword')
-        self.assertIn(b'Invalid username or password', response.data)
+        self.assertIn(b'Username not recognized', response.data)
 
     # Form validation tests
     # Should be changed to flask testing assert redirects from response stream checks
@@ -73,24 +74,31 @@ class AllTests(unittest.TestCase):
     def test_invalid_login_form_data(self):
         self.register(usr='JanTesting', pwd='tpassword')
         response = self.login('DROP TABLE User; alert("alert box!";', 'tpassword')
-        self.assertIn(b'Invalid username or password', response.data)
+        self.assertIn(b'Username not recognized', response.data)
 
     def test_form_is_present_on_register_page(self):
         response = self.app.get('/register')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Please register to access your task list.', response.data)
+        self.assertIn(b'Please register to access your task list', response.data)
 
     def test_user_registration(self):
         self.app.get('/register', follow_redirects=True)
         response = self.register(usr='JanTesting', pwd='tpassword')
         self.assertIn(b'Thank you for registering. Please Login', response.data)
 
-    def test_user_registration_error(self):
+    def test_user_registration_error_username_taken(self):
         self.app.get('/register', follow_redirects=True)
-        self.register(usr='JanTesting', pwd='tpassword')
+        self.register(usr='JanTesting', pwd='tpassword', email='JanTest@gmail.com')
         self.app.get('/register', follow_redirects=True)
-        response = self.register(usr='JanTesting', pwd='tpassword')
-        self.assertIn(b'That username and/or email already exist.', response.data)
+        response = self.register(usr='JanTesting', pwd='tpassword', email='another@gmail.com')
+        self.assertIn(b'Username already taken', response.data)
+
+    def test_user_registration_error_email_taken(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register(usr='JanTesting', pwd='tpassword', email='JanTest@gmail.com')
+        self.app.get('/register', follow_redirects=True)
+        response = self.register(usr='DifferentJan', pwd='tpassword', email='JanTest@gmail.com')
+        self.assertIn(b'Email already in use', response.data)
 
     def test_logged_in_users_can_logout(self):
         self.register('Testerthatwilllogout', 'anothertest101')

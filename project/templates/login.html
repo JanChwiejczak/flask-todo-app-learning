@@ -1,34 +1,33 @@
 {% extends "_base.html" %}
 {% block content %}
-<h1>Welcome to Flask Task Manager</h1>
-<h3>Please login to access your task list.</h3>
-<form class="form-signin" role="form" method="POST" action="/">
-    {{ form.csrf_token }}
-    <p>
-        {{ form.name(placeholder = "email address") }}
-        {% if form.name.errors %}
-          <span class="error">
-            {% for error in form.name.errors %}
-              {{ error }}
-            {% endfor %}
-          </span>
-        {% endif %}
-    </p>
-    <p>
-        {{ form.password(placeholder ="password") }}
-        {% if form.password.errors %}
-          <span class="error">
-            {% for error in form.password.errors %}
-              {{ error }}
-            {% endfor %}
-          </span>
-        {% endif %}
-    </p>
-    <button class="btn btn-sm btn-success" type="submit">Sign in</button>
-</form>
+  <div class="row">
+    <div class="col-md-5 well">
+      <div class="heading">
+        <h1>Welcome to Flask Task Manager</h1>
+        <h4>Please login to access your task list.</h4>
+      </div>
 
-<br>
+      <form class="form" role="form" method="POST" action="/">
+        {{ form.csrf_token }}
+        <div class="form-group {% if form.name.errors %} has-error {% endif %}">
+          {{ form.name(placeholder = "username", class="form-control") }}
+          <p class="help-block">
+            {{ form.name.errors[0] }}
+          </p>
+        </div>
+        <div class="form-group {% if form.password.errors %} has-error {% endif %}">
+          {{ form.password(placeholder = "password", class="form-control") }}
+          <p class="help-block">
+            {{ form.password.errors[0] }}
+          </p>
+        </div>
+        <button class="btn btn-success" type="submit">Sign in</button>
+      </form>
+    </div>
+  </div>
 
-<p><em>Need an account? </em><a href="/register">Signup!!</a></p>
+  <br>
+
+  <p><em>Need an account? </em><a href="/register">Signup!!</a></p>
 
 {% endblock %}
