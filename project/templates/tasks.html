@@ -1,119 +1,113 @@
 {% extends "_base.html" %}
 {% block content %}
 
-<h1>Welcome to Flask Task Manager</h1>
-<a href="/logout">Logout</a>
-<div class="add-task">
-    <h3>Add a new task:</h3>
-            <form action="{{ url_for('tasks.new_task') }}" method="post">
-                {{ form.csrf_token }}
-                <p>
-                    {{ form.name.label }}: {{ form.name(placeholder="New task name") }}
-                    {% if form.name.errors %}
-                    <span class="error">
-                        {% for error in form.name.errors %}
-                          {{ error }}
-                        {% endfor %}
-                    </span>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.due_date.label }}: {{ form.due_date(placeholder="ex. 05/31/2017") }}
-                    {% if form.due_date.errors %}
-                    <span class="error">
-                        {% for error in form.due_date.errors %}
-                          {{ error }}
-                        {% endfor %}
-                    </span>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.priority.label }}
-                    {{ form.priority }}
-                    {% if form.priority.errors %}
-                    <span class="error">
-                        {% for error in form.priority.errors %}
-                          {{ error }}
-                        {% endfor %}
-                    </span>
-                    {% endif %}
-                </p>
-                <p>
-                    <input class="button" type="submit" value="Save">
-                </p>
-            </form>
-</div>
-<div class="entries">
-    <br>
-    <br>
-    <h2>Open tasks:</h2>
-    <div class="datagrid">
-        <table>
-            <thead>
-            <tr>
-                <th width="200px"><strong>Task Name</strong></th>
-                <th width="75px"><strong>Due Date</strong></th>
-                <th width="100px"><strong>Posted Date</strong></th>
-                <th width="50px"><strong>Priority</strong></th>
-                <th width="90px"><strong>Posted By</strong></th>
-                <th><strong>Actions</strong></th>
-            </tr>
-            </thead>
-            {% for task in open_tasks %}
-            <tr>
-                <td width="200px">{{ task.name }}</td>
-                <td width="75px">{{ task.due_date }}</td>
-                <td width="100px">{{ task.posted_date }}</td>
-                <td width="50px">{{ task.priority }}</td>
-                <td width="90px">{{ task.poster.name }}</td>
-                <td>
-                  {% if session['user_id'] == task.user_id or session['user_role'] == 'admin' %}
-                    <a href="{{ url_for('tasks.delete_entry', task_id =task.task_id) }}">Delete</a> -
-                    <a href="{{ url_for('tasks.complete', task_id = task.task_id)}}">Mark as Complete</a>
-                  {%  else %}
-                    <span>N/A</span>
-                  {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+  <div class="add-task panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Add a new task:</h3>
     </div>
-    <br>
-    <br>
-</div>
-<div class="entries">
-    <h2>Closed tasks:</h2>
-    <div class="datagrid">
+    <div class="panel-body">
+      <form action="{{ url_for('tasks.new_task') }}" method="post" class="form-horizontal">
+        {{ form.csrf_token }}
 
-        <table>
-            <thead>
-            <tr>
-                <th width="200px"><strong>Task Name</strong></th>
-                <th width="75px"><strong>Due Date</strong></th>
-                <th width="100px"><strong>Posted Date</strong></th>
-                <th width="50px"><strong>Priority</strong></th>
-                <th width="90px"><strong>Posted By</strong></th>
-                <th><strong>Actions</strong></th>
-            </tr>
-            </thead>
-            {% for task in closed_tasks %}
-            <tr>
-                <td width="200px">{{ task.name }}</td>
-                <td width="75px">{{ task.due_date }}</td>
-                <td width="100px">{{ task.posted_date }}</td>
-                <td width="50px">{{ task.priority }}</td>
-                <td width="90px">{{ task.poster.name }}</td>
-                <td>
-                  {% if session['user_id'] == task.user_id or session['user_role'] == 'admin' %}
-                    <a href="{{ url_for('tasks.delete_entry', task_id =task.task_id) }}">Delete</a>
-                  {%  else %}
-                    <span>N/A</span>
-                  {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="form-group {% if form.name.errors %} has-error {% endif %}">
+          {{ form.name.label(class="col-xs-2 control-label") }}
+          <div class="col-xs-2">
+            {{ form.name(placeholder="New task name", class="form-control") }}
+          </div>
+          <p class="help-block col-xs-2">
+            {{ form.name.errors[0] }}
+          </p>
+        </div>
+
+        <div class="form-group {% if form.due_date.errors %} has-error {% endif %}">
+          {{ form.due_date.label(class="col-xs-2 control-label") }}
+          <div class="col-xs-2">
+            {{ form.due_date(placeholder="ex. 05/31/2017", class="form-control") }}
+          </div>
+          <p class="help-block col-xs-2">
+            {{ form.due_date.errors[0] }}
+          </p>
+        </div>
+
+        <div class="form-group">
+          {{ form.priority.label(class="col-xs-2 control-label") }}
+          <div class="col-xs-1 selectContainer">
+            {{ form.priority(class="form-control") }}
+          </div>
+          <div class="col-xs-2">
+            <button class="btn btn-success" type="submit">Save</button>
+          </div>
+        </div>
+
+      </form>
     </div>
-</div>
+  </div>
+
+  <div class="open-tasks panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Open Tasks</h3>
+    </div>
+    <table class = "table table-striped">
+      <thead></thead>
+      <tr>
+        <th><strong>Task Name</strong></th>
+        <th ><strong>Due Date</strong></th>
+        <th ><strong>Posted Date</strong></th>
+        <th ><strong>Priority</strong></th>
+        <th ><strong>Posted By</strong></th>
+        <th><strong>Actions</strong></th>
+      </tr>
+      {% for task in open_tasks %}
+        <tr>
+          <td >{{ task.name }}</td>
+          <td >{{ task.due_date }}</td>
+          <td >{{ task.posted_date }}</td>
+          <td >{{ task.priority }}</td>
+          <td >{{ task.poster.name }}</td>
+          <td>
+            {% if session['user_id'] == task.user_id or session['user_role'] == 'admin' %}
+              <a class="btn btn-xs btn-success" href="{{ url_for('tasks.complete', task_id = task.task_id)}}">Complete</a>
+              <a class="btn btn-xs btn-danger" href="{{ url_for('tasks.delete_entry', task_id=task.task_id) }}">Delete</a>
+            {%  else %}
+              <span class="label label-default">Not created by You</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+    <div class="completed-tasks panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Completed Tasks</h3>
+    </div>
+    <table class = "table table-striped">
+      <thead></thead>
+      <tr>
+        <th><strong>Task Name</strong></th>
+        <th ><strong>Due Date</strong></th>
+        <th ><strong>Posted Date</strong></th>
+        <th ><strong>Priority</strong></th>
+        <th ><strong>Posted By</strong></th>
+        <th><strong>Actions</strong></th>
+      </tr>
+      {% for task in closed_tasks %}
+        <tr>
+          <td >{{ task.name }}</td>
+          <td >{{ task.due_date }}</td>
+          <td >{{ task.posted_date }}</td>
+          <td >{{ task.priority }}</td>
+          <td >{{ task.poster.name }}</td>
+          <td>
+            {% if session['user_id'] == task.user_id or session['user_role'] == 'admin' %}
+              <a class="btn btn-xs btn-danger" href="{{ url_for('tasks.delete_entry', task_id=task.task_id) }}">Delete</a>
+            {%  else %}
+              <span class="label label-default">Not created by You</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 
 {% endblock %}
