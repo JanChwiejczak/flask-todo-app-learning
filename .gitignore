@@ -20,3 +20,6 @@ error.log
 test.db
 .coverage
 htmlcov/
+
+#Local runner
+run_local.py
