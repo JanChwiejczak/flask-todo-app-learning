@@ -26,8 +26,9 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    now = datetime.datetime.now()
-    with open('error.log', 'a') as log:
-        current_timestamp = now.strftime("%d-%m-%Y %H:%M:%S")
-        log.write("\n{} - 500 error : {}".format(current_timestamp, request.url))
+    if not app.debug:
+        now = datetime.datetime.now()
+        with open('error.log', 'a') as log:
+            current_timestamp = now.strftime("%d-%m-%Y %H:%M:%S")
+            log.write("\n{} - 500 error : {}".format(current_timestamp, request.url))
     return render_template('500.html'), 500
