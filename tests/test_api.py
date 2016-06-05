@@ -77,5 +77,22 @@ class AllTests(unittest.TestCase):
         response = self.app.get('api/v1/tasks/', follow_redirects=True)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.mimetype, 'application/json')
-        self.assertIn(response.data, b'Visit RT23423')
-        self.assertIn(response.data, b'Go to and test H082934')
+        self.assertIn(b'Visit RT23423', response.data)
+        self.assertIn(b'Go to and test H082934', response.data, )
+
+    def test_resource_endpoint_returns_correct_data(self):
+        self.login_go_to_tasks('NowyTester', 'Hiccupss')
+        self.create_task('Visit RT23423', '05/25/2017', '5')
+        self.create_task('Go to and test H082934', '05/25/2017', '5')
+        self.logout()
+        response = self.app.get('api/v1/tasks/2', follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.mimetype, 'application/json')
+        self.assertNotIn(b'Visit RT23423', response.data)
+        self.assertIn(b'Go to and test H082934', response.data, )
+
+    def test_invalid_resource_endpoint_returns_error(self):
+        response = self.app.get('api/v1/tasks/2', follow_redirects=True)
+        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.mimetype, 'application/json')
+        self.assertIn(b'No task with task_id=2', response.data)
