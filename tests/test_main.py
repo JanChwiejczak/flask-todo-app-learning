@@ -11,7 +11,7 @@ TEST_DB = 'test.db'
 class MainTests(unittest.TestCase):
 
     def setUp(self):
-        app.config['DEBUG'] = False
+        app.config['DEBUG'] = True
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, TEST_DB)
@@ -31,6 +31,10 @@ class MainTests(unittest.TestCase):
         response = self.app.get('/This-route-does-not-exist')
         self.assertEquals(response.status_code, 404)
         self.assertIn(b'Sorry', response.data)
+
+    def test_index(self):
+        response = self.app.get('/', content_type='html/text')
+        self.assertEquals(response.status_code, 200)
 
     # def test_500_error(self):
     #     bad_user = User(
