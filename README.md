@@ -1,3 +1,3 @@
-Hi, 
+#Simple To-Do app implemented using Flask microframework
 
-This is a basic project in which I explore varius aspects of Python Flask framework to build a todo app (how creative!). This is a learning journey. Venture into the code at your own risk.
+This is a learning project in which I am putting together a minimal Flask application for managing to do lists. It is structured according with the best practices and has thorough test.

@@ -3,6 +3,7 @@ env/
 venv/
 .idea/
 .cache/
+.python-version
 
 #python specific
 *.pyc
@@ -23,3 +24,4 @@ htmlcov/
 
 #Local runner
 run_local.py
+
